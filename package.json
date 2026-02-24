@@ -1,0 +1,61 @@
+{
+  "name": "shablol-world",
+  "productName": "عالم شبلول",
+  "version": "1.0.0",
+  "description": "عالم شبلول - Shablol World",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "prebuild": "node scripts/prepare-icon.js",
+    "build": "electron-builder",
+    "build:win": "electron-builder --win",
+    "build:dir": "electron-builder --win --dir",
+    "build:portable": "electron-builder --win --config.win.target=portable",
+    "build:nsis": "electron-builder --win --config.win.target=nsis"
+  },
+  "author": "",
+  "license": "MIT",
+  "build": {
+    "appId": "com.shablolworld.app",
+    "productName": "عالم شبلول",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "config.json",
+      "logo.ico"
+    ],
+    "extraResources": [
+      {
+        "from": "flashver",
+        "to": "flashver",
+        "filter": ["**/*"]
+      }
+    ],
+    "win": {
+      "icon": "build/icon.ico",
+      "target": [
+        { "target": "portable", "arch": ["x64"] }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "allowElevation": true,
+      "installerLanguages": ["ar", "en"],
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "عالم شبلول",
+      "runAfterFinish": true,
+      "uninstallDisplayName": "عالم شبلول"
+    }
+  },
+  "devDependencies": {
+    "electron": "9.4.4",
+    "electron-builder": "^22.14.13",
+    "decode-ico": "^0.4.1",
+    "sharp": "^0.33.0",
+    "to-ico": "^1.1.5"
+  }
+}

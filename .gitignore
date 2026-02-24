@@ -1,0 +1,5 @@
+node_modules/
+dist/
+*.dll
+flashver/*.dll
+build-log.txt

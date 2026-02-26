@@ -1,35 +1,40 @@
-# بناء نسخة Mac تلقائياً على GitHub (يعمل على خوادم macOS)
-# الاستخدام: ارفع المشروع إلى GitHub ثم من تبويب Actions شغّل "Build Mac" يدوياً أو عند دفع التغييرات
+# بناء نسخة macOS من المستودع — لا تحتاج جهاز Mac
+# الاستخدام: Actions → Build Mac → Run workflow (أو يُشغّل تلقائياً عند الدفع إلى main)
 
 name: Build Mac
 
 on:
-  workflow_dispatch:   # تشغيل يدوي من تبويب Actions
+  workflow_dispatch:    # تشغيل يدوي: Actions → Build Mac → Run workflow
   push:
     branches: [ main ]
     paths-ignore:
       - '**.md'
       - '.gitignore'
+      - '*.bat'
 
 jobs:
   build-mac:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: استلام الكود
+        uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: تثبيت Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'npm'
 
-      - name: Install dependencies
+      - name: تثبيت الحزم
         run: npm ci
 
-      - name: Build Mac
+      - name: تحضير الأيقونات (للمثبت والأيقونة)
+        run: npm run prebuild
+
+      - name: بناء نسخة Mac
         run: npm run build:mac
 
-      - name: Upload artifacts
+      - name: رفع الملفات الجاهزة (Artifacts)
         uses: actions/upload-artifact@v4
         with:
           name: mac-build

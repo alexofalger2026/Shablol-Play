@@ -22,17 +22,20 @@ jobs:
       - name: تثبيت Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '16'
           cache: 'npm'
 
       - name: تثبيت الحزم
         run: npm ci
 
+      - name: تحضير مجلد flashver (إن لم يكن موجوداً)
+        run: mkdir -p flashver
+
       - name: تحضير الأيقونات (للمثبت والأيقونة)
         run: npm run prebuild
 
       - name: بناء نسخة Mac
-        run: npm run build:mac
+        run: npx electron-builder --mac
 
       - name: رفع الملفات الجاهزة (Artifacts)
         uses: actions/upload-artifact@v4

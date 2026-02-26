@@ -39,16 +39,20 @@ jobs:
       - name: تحضير الأيقونات (للمثبت والأيقونة)
         run: npm run prebuild || true
 
+      - name: ضمان وجود logo.ico (مطلوب في الحزمة)
+        run: |
+          if [ ! -f logo.ico ] && [ -f build/icon.ico ]; then cp build/icon.ico logo.ico; echo "Copied build/icon.ico to logo.ico"; fi
+          ls -la logo.ico build/icon.ico 2>/dev/null || true
+
       - name: ضمان وجود أيقونة Mac 512×512 (احتياطي، بدون إنترنت)
         run: |
           mkdir -p build
           if [ ! -f build/icon.png ]; then
-            # إنشاء 1×1 PNG ثم تكبيره بـ sips (أداة macOS مدمجة)
             node -e "require('fs').writeFileSync('build/icon.png', Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64'))"
-            sips -z 512 512 build/icon.png --out build/icon.png
+            sips -z 512 512 build/icon.png -o build/icon512.png && mv build/icon512.png build/icon.png
             echo "Created 512x512 icon with sips"
           fi
-          ls -la build/icon.png && file build/icon.png
+          file build/icon.png
 
       - name: بناء نسخة Mac
         run: npx electron-builder --mac

@@ -31,7 +31,7 @@ jobs:
 
       - name: تثبيت الحزم
         run: |
-          if [ -f package-lock.json ]; then npm ci; else npm install; fi
+          ( [ -f package-lock.json ] && npm ci ) || npm install
 
       - name: تحضير مجلد flashver (إن لم يكن موجوداً)
         run: mkdir -p flashver
@@ -39,15 +39,16 @@ jobs:
       - name: تحضير الأيقونات (للمثبت والأيقونة)
         run: npm run prebuild || true
 
-      - name: ضمان وجود أيقونة Mac 512×512 (احتياطي)
+      - name: ضمان وجود أيقونة Mac 512×512 (احتياطي، بدون إنترنت)
         run: |
           mkdir -p build
           if [ ! -f build/icon.png ]; then
-            curl -sfL -o build/icon.png "https://placehold.co/512x512/1a1a2e/eee/png" || \
-            curl -sfL -o build/icon.png "https://via.placeholder.com/512"
-            echo "Downloaded placeholder icon"
+            # إنشاء 1×1 PNG ثم تكبيره بـ sips (أداة macOS مدمجة)
+            node -e "require('fs').writeFileSync('build/icon.png', Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64'))"
+            sips -z 512 512 build/icon.png --out build/icon.png
+            echo "Created 512x512 icon with sips"
           fi
-          file build/icon.png || true
+          ls -la build/icon.png && file build/icon.png
 
       - name: بناء نسخة Mac
         run: npx electron-builder --mac

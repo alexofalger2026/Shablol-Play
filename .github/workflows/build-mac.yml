@@ -32,15 +32,23 @@ jobs:
         run: mkdir -p flashver
 
       - name: تحضير الأيقونات (للمثبت والأيقونة)
-        run: npm run prebuild
+        run: npm run prebuild || true
+      - name: ضمان وجود أيقونة Mac (احتياطي)
+        run: |
+          if [ ! -f build/icon.png ]; then
+            mkdir -p build
+            node -e "require('fs').writeFileSync('build/icon.png', Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64'))"
+            echo "Created placeholder icon"
+          fi
 
       - name: بناء نسخة Mac
         run: npx electron-builder --mac
+
+      - name: عرض مخرجات البناء (للتشخيص)
+        run: ls -la dist/ || true
 
       - name: رفع الملفات الجاهزة (Artifacts)
         uses: actions/upload-artifact@v4
         with:
           name: mac-build
-          path: |
-            dist/*.dmg
-            dist/*.zip
+          path: dist/

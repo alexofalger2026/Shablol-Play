@@ -18,7 +18,8 @@ env:
 
 jobs:
   build-mac:
-    runs-on: macos-latest
+    # macos-12 = Intel؛ قد يكون أنسب لـ Electron 9 من Apple Silicon
+    runs-on: macos-12
     steps:
       - name: استلام الكود
         uses: actions/checkout@v4
@@ -55,7 +56,9 @@ jobs:
           file build/icon.png
 
       - name: بناء نسخة Mac
-        run: npx electron-builder --mac
+        run: |
+          set -o pipefail
+          npx electron-builder --mac 2>&1 | tee electron-builder.log
 
       - name: عرض مخرجات البناء (للتشخيص)
         run: ls -la dist/ || true
@@ -72,3 +75,11 @@ jobs:
         with:
           name: mac-build
           path: dist/
+
+      - name: رفع سجل البناء عند الفشل (للتشخيص)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log-failed
+          path: electron-builder.log
+          if-no-files-found: ignore

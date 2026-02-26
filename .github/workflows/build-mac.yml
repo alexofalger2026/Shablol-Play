@@ -41,17 +41,26 @@ jobs:
 
       - name: ضمان وجود أيقونة Mac 512×512 (احتياطي)
         run: |
+          mkdir -p build
           if [ ! -f build/icon.png ]; then
-            mkdir -p build
-            curl -sL -o build/icon.png "https://via.placeholder.com/512/1a1a2e/eee.png?text=App"
+            curl -sfL -o build/icon.png "https://placehold.co/512x512/1a1a2e/eee/png" || \
+            curl -sfL -o build/icon.png "https://via.placeholder.com/512"
             echo "Downloaded placeholder icon"
           fi
+          file build/icon.png || true
 
       - name: بناء نسخة Mac
         run: npx electron-builder --mac
 
       - name: عرض مخرجات البناء (للتشخيص)
         run: ls -la dist/ || true
+
+      - name: التحقق من وجود المخرجات
+        run: |
+          if [ -z "$(ls -A dist 2>/dev/null)" ]; then
+            echo "::error::البناء لم ينتج أي ملفات في dist/"
+            exit 1
+          fi
 
       - name: رفع الملفات الجاهزة (Artifacts)
         uses: actions/upload-artifact@v4

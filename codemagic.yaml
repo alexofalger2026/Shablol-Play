@@ -1,0 +1,15 @@
+workflows:
+  build-mac:
+    name: Build macOS app
+    max_build_duration: 60
+    scripts:
+      - name: Checkout code
+        script: git checkout main
+      - name: Install dependencies
+        script: npm ci
+      - name: Prebuild icons
+        script: npm run prebuild
+      - name: Build Mac App
+        script: npx electron-builder --mac
+    artifacts:
+      - dist/**

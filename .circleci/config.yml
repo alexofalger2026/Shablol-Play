@@ -1,0 +1,22 @@
+version: 2.1
+jobs:
+  build-mac:
+    macos:
+      xcode: "13.4.1"
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: npm install
+      - run:
+          name: Build Mac App
+          command: |
+            chmod +x build-mac.sh
+            ./build-mac.sh
+      - store_artifacts:
+          path: build
+          destination: mac-output
+workflows:
+  build:
+    jobs:
+      - build-mac

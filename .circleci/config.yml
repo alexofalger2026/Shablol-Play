@@ -2,7 +2,7 @@ version: 2.1
 jobs:
   build-mac:
     macos:
-      xcode: "13.4.1"
+      xcode: "14.2.0"
     steps:
       - checkout
       - run:
@@ -14,8 +14,11 @@ jobs:
             chmod +x build-mac.sh
             ./build-mac.sh
       - store_artifacts:
-          path: build
+          path: dist
           destination: mac-output
+      - store_artifacts:
+          path: build-log-mac.txt
+          destination: build-log
 workflows:
   build:
     jobs:

@@ -2,7 +2,7 @@ version: 2.1
 jobs:
   build-mac:
     macos:
-      xcode: "13.4.1"
+      xcode: "14.2.0" # تم التحديث لنسخة مدعومة
     steps:
       - checkout
       - run:
@@ -14,8 +14,11 @@ jobs:
             chmod +x build-mac.sh
             ./build-mac.sh
       - store_artifacts:
-          path: build
+          path: dist # تم التعديل لأن electron-builder يخرج الملفات هنا
           destination: mac-output
+      - store_artifacts:
+          path: build-log-mac.txt # إضافة ملف السجل لتسهيل حل المشاكل مستقبلاً
+          destination: logs
 workflows:
   build:
     jobs:
